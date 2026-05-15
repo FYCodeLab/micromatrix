@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MicroMatrix — Big ideas on 64 tiny pixels</title>
+  <meta name="description" content="MicroMatrix est un laboratoire ESP32-S3 et matrice LED 8×8 pour débutants, créé dans la collection Vibe Robotics." />
+
+  <style>
+    :root {
+      --bg: #10131f;
+      --bg-2: #151a2b;
+      --panel: #181d2f;
+      --panel-soft: #222842;
+      --text: #f5f7ff;
+      --muted: #b8bfd9;
+      --cyan: #35d9ff;
+      --green: #52ff9a;
+      --yellow: #ffd166;
+      --pink: #ff5ca8;
+      --red: #ff6b6b;
+      --line: rgba(255, 255, 255, 0.12);
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+      --max: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 15%, rgba(53, 217, 255, 0.16), transparent 26rem),
+        radial-gradient(circle at 85% 10%, rgba(255, 92, 168, 0.14), transparent 22rem),
+        radial-gradient(circle at 50% 90%, rgba(82, 255, 154, 0.11), transparent 26rem),
+        var(--bg);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+      z-index: -1;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 22px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(16, 19, 31, 0.82);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3px;
+      padding: 5px;
+      border-radius: 12px;
+      background: #070a12;
+      border: 1px solid rgba(53, 217, 255, 0.45);
+      box-shadow: 0 0 18px rgba(53, 217, 255, 0.22);
+    }
+
+    .brand-mark i {
+      display: block;
+      border-radius: 3px;
+      background: #29314f;
+    }
+
+    .brand-mark i:nth-child(1),
+    .brand-mark i:nth-child(6),
+    .brand-mark i:nth-child(11),
+    .brand-mark i:nth-child(16) {
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 9px;
+      border-radius: 999px;
+    }
+
+    .nav-links a:hover {
+      color: white;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    .hero {
+      padding: 82px 0 64px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      font-size: 0.92rem;
+    }
+
+    h1 {
+      font-size: clamp(3.4rem, 9vw, 7rem);
+      line-height: 0.9;
+      margin: 20px 0 16px;
+      letter-spacing: -0.075em;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--cyan), var(--green), var(--yellow), var(--pink));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: clamp(1.25rem, 2.4vw, 2rem);
+      line-height: 1.15;
+      margin: 0 0 16px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+    }
+
+    .intro {
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.72;
+      margin: 0 0 26px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 28px 0 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: 2px solid rgba(53, 217, 255, 0.55);
+      background: linear-gradient(180deg, #26304d, #171c2e);
+      color: white;
+      box-shadow: 0 0 18px rgba(53,217,255,0.22);
+      font-weight: 850;
+      letter-spacing: 0.02em;
+      transition: transform 160ms ease, box-shadow 160ms ease, border 160ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 26px rgba(53,217,255,0.36);
+      border-color: var(--cyan);
+    }
+
+    .btn.secondary {
+      border-color: rgba(255,255,255,0.18);
+      box-shadow: none;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+    }
+
+    .matrix-card {
+      position: relative;
+      padding: 22px;
+      border-radius: 30px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+        var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .matrix-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      margin-bottom: 18px;
+    }
+
+    .signal {
+      display: flex;
+      gap: 8px;
+    }
+
+    .signal span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    .signal span:nth-child(2) {
+      background: var(--yellow);
+      box-shadow: 0 0 12px var(--yellow);
+    }
+
+    .signal span:nth-child(3) {
+      background: var(--pink);
+      box-shadow: 0 0 12px var(--pink);
+    }
+
+    .led-grid {
+      aspect-ratio: 1 / 1;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 10px;
+      padding: 18px;
+      border-radius: 22px;
+      background: #070a12;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.65);
+    }
+
+    .pixel {
+      border-radius: 8px;
+      background: #20263e;
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,0.22);
+      animation: blink 5s infinite;
+      animation-delay: calc(var(--i) * 37ms);
+    }
+
+    .pixel.on-cyan {
+      background: var(--cyan);
+      box-shadow: 0 0 18px var(--cyan), inset 0 -3px 0 rgba(0,0,0,0.18);
+    }
+
+    .pixel.on-green {
+      background: var(--green);
+      box-shadow: 0 0 18px var(--green), inset 0 -3px 0 rgba(0,0,0,0.18);
+    }
+
+    .pixel.on-yellow {
+      background: var(--yellow);
+      box-shadow: 0 0 18px var(--yellow), inset 0 -3px 0 rgba(0,0,0,0.18);
+    }
+
+    .pixel.on-pink {
+      background: var(--pink);
+      box-shadow: 0 0 18px var(--pink), inset 0 -3px 0 rgba(0,0,0,0.18);
+    }
+
+    @keyframes blink {
+      0%, 68%, 100% { filter: brightness(1); }
+      70% { filter: brightness(1.8); }
+      72% { filter: brightness(0.7); }
+      75% { filter: brightness(1.35); }
+    }
+
+    .caption {
+      margin: 16px 4px 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+
+    section {
+      padding: 54px 0;
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 24px;
+    }
+
+    .kicker {
+      color: var(--green);
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.8rem;
+    }
+
+    h2 {
+      margin: 8px 0 12px;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      line-height: 1;
+      letter-spacing: -0.055em;
+    }
+
+    .lead {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1.05rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      position: relative;
+      min-height: 210px;
+      padding: 22px;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.025)),
+        var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      bottom: -40px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(53,217,255,0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .card .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      margin-bottom: 28px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.62;
+    }
+
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .activity {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid var(--line);
+      min-height: 185px;
+    }
+
+    .activity strong {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    .activity h3 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+    }
+
+    .activity p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .phone-demo {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 26px;
+      align-items: center;
+    }
+
+    .phone {
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 16px;
+      border-radius: 38px;
+      background: #070a12;
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: var(--shadow);
+    }
+
+    .screen {
+      border-radius: 28px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #1b2240, #111526);
+      border: 1px solid rgba(255,255,255,0.12);
+      min-height: 560px;
+      padding: 18px;
+    }
+
+    .audio-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(53,217,255,0.12);
+      border: 1px solid rgba(53,217,255,0.25);
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .wave {
+      display: flex;
+      gap: 3px;
+      align-items: end;
+      height: 20px;
+    }
+
+    .wave i {
+      display: block;
+      width: 4px;
+      border-radius: 5px;
+      background: var(--cyan);
+      animation: wave 1s infinite ease-in-out;
+    }
+
+    .wave i:nth-child(1) { height: 8px; }
+    .wave i:nth-child(2) { height: 16px; animation-delay: 0.1s; }
+    .wave i:nth-child(3) { height: 11px; animation-delay: 0.2s; }
+    .wave i:nth-child(4) { height: 19px; animation-delay: 0.3s; }
+    .wave i:nth-child(5) { height: 10px; animation-delay: 0.4s; }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.7); opacity: 0.65; }
+      50% { transform: scaleY(1.2); opacity: 1; }
+    }
+
+    .fake-field {
+      margin: 12px 0;
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .slider {
+      height: 12px;
+      margin: 18px 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green) 0 58%, rgba(255,255,255,0.15) 58%);
+      position: relative;
+    }
+
+    .slider::after {
+      content: "";
+      position: absolute;
+      left: 58%;
+      top: 50%;
+      translate: -50% -50%;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 18px rgba(255,255,255,0.4);
+    }
+
+    .execute {
+      margin-top: 18px;
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      background: linear-gradient(90deg, var(--pink), var(--yellow));
+      color: #17131c;
+      padding: 15px;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .note {
+      padding: 20px;
+      border-radius: var(--radius);
+      background: rgba(82, 255, 154, 0.09);
+      border: 1px solid rgba(82, 255, 154, 0.22);
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .codebox {
+      background: #070a12;
+      border: 1px solid rgba(82,255,154,0.22);
+      border-radius: 18px;
+      padding: 18px;
+      overflow-x: auto;
+      color: #dbe7ff;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .joke {
+      border-left: 4px solid var(--yellow);
+      padding: 16px 18px;
+      border-radius: 0 16px 16px 0;
+      background: rgba(255, 209, 102, 0.08);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    footer {
+      padding: 42px 0 58px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      margin-top: 40px;
+    }
+
+    .footer-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 920px) {
+      .hero-grid,
+      .phone-demo {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .activity-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 54px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .activity-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .led-grid {
+        gap: 6px;
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 3.4rem;
+      }
+
+      .screen {
+        min-height: 500px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="MicroMatrix accueil">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i>
+          <i></i><i></i><i></i><i></i>
+        </span>
+        <span>MicroMatrix</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Navigation principale">
+        <a href="#fonctionnement"><span class="dot"></span> Fonctionnement</a>
+        <a href="#activites"><span class="dot"></span> Activités</a>
+        <a href="#ia"><span class="dot"></span> IA prudente</a>
+        <a href="#code"><span class="dot"></span> Code</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">
+            <span class="dot"></span>
+            Projet Vibe Robotics pour débutants
+          </div>
+
+          <h1><span class="gradient-text">MicroMatrix</span></h1>
+
+          <p class="subtitle">Big ideas on 64 tiny pixels.</p>
+
+          <p class="intro">
+            Un petit laboratoire ESP32-S3 avec matrice LED 8×8 pour découvrir l’électronique,
+            Python, les GPIO, la PWM et les joies très spécifiques du “pourquoi cette LED ne clignote pas ?”.
+          </p>
+
+          <div class="buttons">
+            <a class="btn" href="#activites">Commencer les démos</a>
+            <a class="btn secondary" href="https://github.com/FYCodeLab/espy-robotics">Voir le repo GitHub</a>
+          </div>
+        </div>
+
+        <div class="matrix-card" aria-label="Matrice LED animée">
+          <div class="matrix-topbar">
+            <span>MATRIX ONLINE</span>
+            <span class="signal"><span></span><span></span><span></span></span>
+          </div>
+
+          <div class="led-grid" id="ledGrid"></div>
+
+          <p class="caption">
+            64 pixels. Un ESP32. Beaucoup de petites victoires, et parfois un bug qui porte une moustache invisible.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fonctionnement">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Comment ça marche</div>
+          <h2>Trois objets, une petite mission.</h2>
+          <p class="lead">
+            MicroMatrix mélange livret imprimé, téléphone et ESP32 pour transformer chaque activité
+            en expérience courte, visible et modifiable.
+          </p>
+        </div>
+
+        <div class="cards">
+          <article class="card">
+            <div class="tag"><span class="dot"></span> Booklet</div>
+            <h3>Le guide imprimé</h3>
+            <p>
+              Instructions courtes, QR codes, mini-schémas et anecdotes microélectroniques.
+              Pas de mur de texte. Le papier respire.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="tag"><span class="dot"></span> Téléphone</div>
+            <h3>Mission control</h3>
+            <p>
+              Audio en haut, boutons et champs au centre, gros bouton Exécuter en bas.
+              NASA, mais avec moins de fusées et plus de pixels.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="tag"><span class="dot"></span> ESP32</div>
+            <h3>Le truc qui obéit</h3>
+            <p>
+              Le microcontrôleur pilote LEDs, matrice, animations et Wi-Fi local.
+              Il accepte les ordres. Parfois. Après sauvegarde. Et reset.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="activites">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Activités</div>
+          <h2>De “ça s’allume” à “regarde, il sourit”.</h2>
+          <p class="lead">
+            Chaque activité vise une victoire visible en quelques minutes. Une LED, un pixel,
+            un effet. Petite science, gros plaisir.
+          </p>
+        </div>
+
+        <div class="activity-grid">
+          <article class="activity">
+            <strong>01 · LED</strong>
+            <h3>Brancher & tester</h3>
+            <p>GPIO 7, GND, polarité. La LED clignote trois fois. L’électron consent à coopérer.</p>
+          </article>
+
+          <article class="activity">
+            <strong>02 · PWM</strong>
+            <h3>Régler la luminosité</h3>
+            <p>Un curseur contrôle la lumière. La broche clignote trop vite pour que vos yeux râlent.</p>
+          </article>
+
+          <article class="activity">
+            <strong>03 · Matrice</strong>
+            <h3>Observer la grille</h3>
+            <p>Coins, centre, orientation. On apprend où commence ce minuscule univers carré.</p>
+          </article>
+
+          <article class="activity">
+            <strong>04 · Pixels</strong>
+            <h3>x, y, couleur</h3>
+            <p>Choisissez une coordonnée et une couleur. Le pixel apparaît. Pouvoir absolu, format 8×8.</p>
+          </article>
+
+          <article class="activity">
+            <strong>05 · Animation</strong>
+            <h3>Feu d’artifice</h3>
+            <p>HSV, couleurs, vitesse, éclats. Très petit spectacle pyrotechnique, zéro autorisation municipale.</p>
+          </article>
+
+          <article class="activity">
+            <strong>06 · Smiley</strong>
+            <h3>Finir avec un visage</h3>
+            <p>Deux yeux, une bouche, un clin d’œil. La matrice devient vaguement sociale.</p>
+          </article>
+
+          <article class="activity">
+            <strong>07 · Capteurs</strong>
+            <h3>Bouger pour contrôler</h3>
+            <p>Incliner la carte, déplacer un point, découvrir l’accéléromètre sans invoquer un tableur.</p>
+          </article>
+
+          <article class="activity">
+            <strong>08 · Protos</strong>
+            <h3>Ça marche presque</h3>
+            <p>RoboClic, mini-jeux, essais. Le “presque” est un excellent professeur, un peu taquin.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap phone-demo">
+        <div class="phone" aria-label="Aperçu de l'interface téléphone">
+          <div class="screen">
+            <div class="audio-pill">
+              <span>🎧 Audio · Activité 04</span>
+              <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            </div>
+
+            <div class="fake-field"><span>x</span><strong>3</strong></div>
+            <div class="fake-field"><span>y</span><strong>4</strong></div>
+            <div class="fake-field"><span>Couleur</span><strong>cyan</strong></div>
+
+            <p class="small">
+              Vise une coordonnée. Appuie. Observe. Répète. C’est de la robotique, mais avec moins de métal et plus de patience.
+            </p>
+
+            <div class="slider" aria-hidden="true"></div>
+
+            <button class="execute">Exécuter</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="kicker">Interface web</div>
+          <h2>Le téléphone devient un petit panneau de contrôle.</h2>
+          <p class="lead">
+            Chaque page d’activité affiche un audio court, une illustration, quelques champs ou curseurs,
+            puis un bouton Exécuter. L’idée est simple : faire, observer, comprendre. Dans cet ordre,
+            parce que le cerveau aime les preuves lumineuses.
+          </p>
+
+          <div class="joke">
+            Il ne faut pas être expert pour commencer. Les experts sont bienvenus, surtout s’ils évitent
+            de commencer chaque phrase par “en fait…”.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ia">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Vibe Robotics</div>
+          <h2>IA utile, prudence obligatoire.</h2>
+          <p class="lead">
+            MicroMatrix fait partie de la collection Vibe Robotics : des outils pour entrer dans l’électronique
+            et la robotique par des expériences simples. Les LLM comme ChatGPT ou Gemini peuvent aider à formuler
+            une idée, écrire un petit script et déboguer. Ils peuvent aussi halluciner une broche avec un aplomb superbe.
+          </p>
+        </div>
+
+        <div class="cards">
+          <article class="card">
+            <div class="tag"><span class="dot"></span> Prompt</div>
+            <h3>Demander clairement</h3>
+            <p>“Fais clignoter GPIO 7 en CircuitPython” vaut mieux que “rends mon robot intelligent”. Le flou nourrit les gobelins.</p>
+          </article>
+
+          <article class="card">
+            <div class="tag"><span class="dot"></span> Test</div>
+            <h3>Changer une seule chose</h3>
+            <p>Une modification, un test. Deux modifications, deux suspects. Dix modifications, épisode policier.</p>
+          </article>
+
+          <article class="card">
+            <div class="tag"><span class="dot"></span> Vérifier</div>
+            <h3>Observer avant de paniquer</h3>
+            <p>Alimentation, port, sauvegarde, reset, branchement. La moitié du génie maker consiste à regarder le bon fil.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="code">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="kicker">Petit extrait</div>
+          <h2>Changer un nombre. Voir le monde clignoter.</h2>
+          <p class="lead">
+            Exemple minimal en CircuitPython. La grande aventure commence souvent par une LED qui accepte de faire “coucou”.
+          </p>
+        </div>
+
+        <pre class="codebox"><code>import time, board
+from digitalio import DigitalInOut, Direction
+
+led = DigitalInOut(board.IO7)
+led.direction = Direction.OUTPUT
+
+for _ in range(3):
+    led.value = True
+    time.sleep(0.3)
+    led.value = False
+    time.sleep(0.3)</code></pre>
+
+        <p class="note">
+          Règle MicroMatrix : tester petit, luminosité raisonnable, composants protégés, et ne jamais confondre
+          “ça devrait marcher” avec une mesure expérimentale. La science aime les preuves. Les LEDs aussi.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <div>
+        <strong>MicroMatrix</strong>
+        <div class="small">Big ideas on 64 tiny pixels. Un projet de la collection Vibe Robotics.</div>
+      </div>
+
+      <div class="buttons">
+        <a class="btn secondary" href="mailto:espy-robotics@protonmail.com?subject=MicroMatrix">Contact</a>
+        <a class="btn secondary" href="https://github.com/FYCodeLab/espy-robotics">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const grid = document.getElementById("ledGrid");
+
+    const smiley = [
+      0,0,1,0,0,1,0,0,
+      0,0,1,0,0,1,0,0,
+      0,0,0,0,0,0,0,0,
+      0,1,0,0,0,0,1,0,
+      0,0,1,0,0,1,0,0,
+      0,0,0,1,1,0,0,0,
+      0,0,0,0,0,0,0,0,
+      0,1,0,0,0,0,1,0
+    ];
+
+    const colors = ["on-cyan", "on-green", "on-yellow", "on-pink"];
+
+    for (let i = 0; i < 64; i++) {
+      const p = document.createElement("span");
+      p.className = "pixel";
+      p.style.setProperty("--i", i);
+      if (smiley[i]) {
+        p.classList.add(colors[i % colors.length]);
+      }
+      grid.appendChild(p);
+    }
+
+    function randomSparkle() {
+      const pixels = Array.from(document.querySelectorAll(".pixel"));
+      const previous = pixels.filter(p => p.dataset.spark === "1");
+      previous.forEach(p => {
+        p.dataset.spark = "0";
+        if (!p.dataset.base) p.className = "pixel";
+      });
+
+      for (let n = 0; n < 8; n++) {
+        const idx = Math.floor(Math.random() * pixels.length);
+        const p = pixels[idx];
+        p.dataset.spark = "1";
+        p.className = "pixel " + colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      smiley.forEach((on, i) => {
+        if (on && pixels[i].dataset.spark !== "1") {
+          pixels[i].className = "pixel " + colors[i % colors.length];
+          pixels[i].dataset.base = "1";
+        }
+      });
+    }
+
+    setInterval(randomSparkle, 1100);
+  </script>
+</body>
+</html>
