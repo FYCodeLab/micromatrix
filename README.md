@@ -4,6 +4,9 @@
 Ou, en français : beaucoup d’ambition pour une grille de LEDs grande comme un biscuit apéritif.
 
 ---
+## Lien web
+
+[Open Activities](https://fycodelab.github.io/micromatrix/#activites) 
 
 ## 🎧 Le kit découverte MicroMatrix
 
