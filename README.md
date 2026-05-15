@@ -1,5 +1,16 @@
  # MicroMatrix
 
+ <p align="center">
+  <img src="/assets/logo-mm.jpg.jpg" width="500">
+</p>
+
+<p align="center">
+  <b>Le mini laboratoire LED pour découvrir les microcontrôleurs.</b><br>
+  Une matrice 8×8 interactive basée sur ESP32 accompagnée d’un audioguide et d’expériences progressives.
+</p>
+
+---
+
 **Big ideas on 64 tiny pixels.**  
 Ou, en français : beaucoup d’ambition pour une grille de LEDs grande comme un biscuit apéritif.
 
