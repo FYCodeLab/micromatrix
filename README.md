@@ -9,10 +9,6 @@
   Une matrice 8×8 interactive basée sur ESP32 accompagnée d’un audioguide et d’expériences progressives.
 </p>
 
----
-
-**Big ideas on 64 tiny pixels.**  
-Ou, en français : beaucoup d’ambition pour une grille de LEDs grande comme un biscuit apéritif.
 
 ---
 ## Lien web
@@ -27,7 +23,7 @@ Ou, en français : beaucoup d’ambition pour une grille de LEDs grande comme un
   </a>
 </p>
 
-**MicroMatrix** est un petit laboratoire d’initiation basé sur un microcontrôleur **ESP32** et une **matrice LED 8×8**.  
+**MicroMatrix** est un petit laboratoire d’initiation grand comme un biscuit apéritif, basé sur un microcontrôleur **ESP32** et une **matrice LED 8×8**.  
 Son objectif est simple : aider les débutants à découvrir l’électronique, la programmation et la robotique sans être immédiatement assommés par des schémas qui ressemblent à des cartes au trésor dessinées par un poulpe.
 
 MicroMatrix fait partie de la collection **Vibe Robotics**, une série d’outils pédagogiques pour apprendre en manipulant, en testant, en se trompant un peu, puis en recommençant plus intelligemment. Bref : la méthode scientifique, mais avec des LEDs qui clignotent.
