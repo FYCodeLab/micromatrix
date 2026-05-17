@@ -1,6 +1,6 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/FYCodeLab/micromatrix/main/assets/logo-mm.jpg"
-       width="width:50%;">
+<img src="https://raw.githubusercontent.com/FYCodeLab/micromatrix/main/assets/logo-mm.jpg"
+     style="width:50%;">
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="https://github.com/FYCodeLab/espy-robotics">
-    <img src="assets/Espyimg.JPG" width="width:50%;">
+    <img src="assets/Espyimg.JPG" style="width:50%;">
   </a>
 </p>
 
@@ -161,7 +161,7 @@ Cependant, si vous préférez découvrir l’électronique avec un kit déjà mo
 
 <p align="center">
   <a href="https://github.com/FYCodeLab/espy-robotics">
-    <img src="https://raw.githubusercontent.com/FYCodeLab/espy-robotics/main/assets/espy%20kits.jpg" width="width:50%;">
+    <img src="https://raw.githubusercontent.com/FYCodeLab/espy-robotics/main/assets/espy%20kits.jpg" style="width:50%;">
   </a>
 </p>
 
