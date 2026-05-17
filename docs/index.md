@@ -3,8 +3,6 @@ layout: default
 title: Home
 ---
 
-{% capture readme %}
-{% include_relative ../README.md %}
-{% endcapture %}
+# Micromatrix
 
-{{ readme | markdownify }}
+Hello world
