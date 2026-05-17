@@ -1,7 +1,7 @@
  # MicroMatrix
 
  <p align="center">
-  <img src="/assets/logo-mm.jpg.jpg" width="500">
+  <img src="[/assets/logo-mm.jpg.jpg](https://raw.githubusercontent.com/FYCodeLab/micromatrix/main/assets/logo-mm.jpg.jpg)" width="500">
 </p>
 
 <p align="center">
